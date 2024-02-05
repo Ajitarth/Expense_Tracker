@@ -11,3 +11,11 @@ class Expense(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Income(models.Model):
+    name = models.CharField(max_length=50)
+    income = models.IntegerField()
+
+    def __str__(self):
+        return self.name

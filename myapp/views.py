@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
-from . forms import ExpenseForm
-from . models import Expense
+from . forms import ExpenseForm,IncomeForm
+from . models import Expense,Income
 from django.db.models import Sum
 import datetime
 
@@ -8,6 +8,13 @@ import datetime
 
 
 def index(request):
+    if request.method == 'POST':
+        income = IncomeForm(request.POST)
+        if income.is_valid():
+            income.save()
+            return redirect('index')
+    income = Income.objects.all()
+    total_income = income.aggregate(Sum('income'))
     if request.method == 'POST':
         expense = ExpenseForm(request.POST)
         if expense.is_valid():
@@ -32,7 +39,7 @@ def index(request):
     categorical_sums = Expense.objects.filter().values('category').order_by('category').annotate(sum=Sum('amount'))
 
     expense_form = ExpenseForm()
-    return render(request, 'myapp/index.html', {'expense_form': expense_form, 'expenses': expenses,'total_expenses': total_expenses,'yearly_sum': yearly_sum, 'monthly_sum': monthly_sum,'weekly_sum': weekly_sum,'daily_sums': daily_sums,'categorical_sums':categorical_sums})
+    return render(request, 'myapp/index.html', {'expense_form': expense_form, 'expenses': expenses,'total_expenses': total_expenses,'yearly_sum': yearly_sum, 'monthly_sum': monthly_sum,'weekly_sum': weekly_sum,'daily_sums': daily_sums,'categorical_sums':categorical_sums,'total_income': total_income})
 
 
 
